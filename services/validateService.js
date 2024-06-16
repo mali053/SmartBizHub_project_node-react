@@ -18,21 +18,29 @@ const validatePassword = (password) => {
     const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
 
     if (password.length < minLength) {
-        throw new Error(`Password must be at least ${minLength} characters long`);
+        return `Password must be at least ${minLength} characters long`;
     }
     if (!hasUpperCase) {
-        throw new Error('Password must contain at least one uppercase letter');
+        return 'Password must contain at least one uppercase letter';
     }
     if (!hasLowerCase) {
-        throw new Error('Password must contain at least one lowercase letter');
+        return 'Password must contain at least one lowercase letter';
     }
     if (!hasNumbers) {
-        throw new Error('Password must contain at least one number');
+        return 'Password must contain at least one number';
     }
     if (!hasSpecialChar) {
-        throw new Error('Password must contain at least one special character');
+        return 'Password must contain at least one special character';
     }
-}
+    return null; // Password is valid
+};
 
+const validatePhone = (phone) => {
+    const phonePattern = /^\d{2,3}-\d{7}$/;
+    if (!phonePattern.test(phone)) {
+        return 'Phone number must be in the format XX-XXXXXXX or XXX-XXXXXXX and be 10 or 11 digits long';
+    }
+    return null; // Phone is valid
+};
 
-module.exports = { validateEmail, validatePassword };
+module.exports = { validateEmail, validatePassword, validatePhone };

@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
 const UserFromDB = require('../models/user')
-const { validateEmail, validatePassword } = require('./validateService');
+const { validateEmail, validatePassword, validatePhone } = require('./validateService');
 
 const getUser = async (id) => {
     return await UserFromDB.findById(id)
@@ -21,12 +21,14 @@ const signup = async (username, password, phone, email, role) => {
         }
 
         // Validate email
-        const isEmailValid = await validateEmail(email);
-        if (!isEmailValid) {
-            throw new Error('Invalid email address');
-        }
+        // const isEmailValid = await validateEmail(email);
+        // if (!isEmailValid) {
+        //     throw new Error('Invalid email address');
+        // }
 
-        validatePassword(password);
+        // validatePassword(password);
+
+        // validatePhone(phone)
 
         // Hash password
         const salt = await bcrypt.genSalt(10);
