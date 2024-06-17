@@ -1,6 +1,7 @@
 const axios = require('axios');
 
 const validateEmail = async (email) => {
+    if (!email) return true;
     try {
         const response = await axios.get(`https://emailvalidation.abstractapi.com/v1/?api_key=e93dfe0babd84e35bf33be23e29480c7&email=${email}`);
         return response.data.is_valid_format.value;
