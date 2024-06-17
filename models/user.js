@@ -7,7 +7,7 @@ const UserSchema = new Schema({
   password: { type: String, required: true, minLength: 5 },
   phone: { type: String, required: true },
   email: { type: String },
-  role: { type: String }
+  userType: { type: String, required: true, enum: ['admin', 'client'] } // סוג משתמש: מנהל או לקוח
 })
 
 UserSchema.virtual('url').get(function () {
