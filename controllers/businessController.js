@@ -40,9 +40,9 @@ const getBusinessByUserId = async (req, res) => {
 
 const createBusiness = async (req, res) => {
     try {
-        const { name, description } = req.body
+        const business = req.body
         const owner = req.user.id
-        await businessService.createBusiness(name, description, owner)
+        await businessService.createBusiness(business, owner)
         res.status(201).send('the business created successfully');
     } catch (error) {
         console.error(error)
