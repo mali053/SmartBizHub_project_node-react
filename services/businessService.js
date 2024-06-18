@@ -19,7 +19,7 @@ const createBusiness = async (business, owner) => {
         }
 
         // Save the new business to the database
-        const newBusiness = new businessToDB({ name: business.name, description: business.description, owner });
+        const newBusiness = new businessToDB({ name: business.name, description: business.description, owner, address: business.address, email: business.email, phone: business.phoneNumber });
         await newBusiness.save();
     } catch (err) {
         throw new Error(err.message);
