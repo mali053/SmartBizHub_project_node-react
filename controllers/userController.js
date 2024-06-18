@@ -13,8 +13,8 @@ const getUser = async (req, res) => {
 
 const signup = async (req, res) => {
     try {
-        const { username, password, phone, email, role } = req.body
-        await userService.signup(username, password, phone, email, role)
+        const user = req.body
+        await userService.signup(user)
         res.status(201).send('User saved successfully')
     } catch (err) {
         console.error(err)
@@ -35,8 +35,8 @@ const login = async (req, res) => {
 const update = async (req, res) => {
     try {
         const id = req.params.id;
-        const { username, password, phone, email, role } = req.body
-        await userService.update(id, username, password, email, phone, role)
+        const user = req.body
+        await userService.update(id, user)
         res.status(201).send('User updated successfully')
     } catch (err) {
         console.error(err)

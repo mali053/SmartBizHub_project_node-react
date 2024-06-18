@@ -2,29 +2,19 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
 const UserToDB = require('../models/user')
-const { validateEmail, validatePassword, validatePhone } = require('./validateService');
+const { validatePassword } = require('./validateService');
 
 const getUser = async (id) => {
     return await UserToDB.findById(id)
 }
 
-const signup = async (username, password, phone, email, role) => {
-    try {
-        // שליפת כל המשתמשים עם אותו שם משתמש
-        const existingUsers = await UserToDB.find({ username });
-
-        for (const user of existingUsers) {
-            const isPasswordMatch = await bcrypt.compare(password, user.password);
-            if (isPasswordMatch) {
-                throw new Error('Password already in use');
-            }
-        }
-
+const signup = async (user) => {
+    try {        
         const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
+        const hashedPassword = await bcrypt.hash(user.password, salt);
 
         // Save new user to the database
-        const newUser = new UserToDB({ username, password: hashedPassword, phone, email, role });
+        const newUser = new UserToDB({ username: user.username, password: hashedPassword, phone: user.phone, email: user.email, userType: user.userType });
         await newUser.save();
     } catch (err) {
         throw new Error(err.message);
@@ -65,35 +55,18 @@ const login = async (username, password) => {
     }
 };
 
-const update = async (id, username, password, email, phone, role) => {
+const update = async (id, user) => {
     try {
-        const user = await UserToDB.findById(id);
-
-        if (!user) {
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(user.password, salt);
+        user.password = hashedPassword
+        
+        const userToUpdate = await UserToDB.findByIdAndUpdate(id, user, { new: true });
+        if (!userToUpdate) {
             throw new Error('User not found');
         }
 
-        // עדכון פרטי המשתמש
-        if (username) user.username = username;
-        if (password) {
-            validatePassword(password)
-            const salt = await bcrypt.genSalt(10);
-            user.password = await bcrypt.hash(password, salt);
-        }
-        if (email) {
-            const isEmailValid = await validateEmail(email);
-            if (!isEmailValid) {
-                throw new Error('Invalid email address');
-            }
-            user.email = email;
-        }
-        if (phone) user.phone = phone;
-        if (role) user.role = role;
-
-        // שמירת השינויים
-        await user.save();
-
-        return user;
+        return userToUpdate;
     } catch (error) {
         throw new Error(error.message);
     }
