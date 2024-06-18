@@ -1,12 +1,13 @@
-const { validateEmail, validatePassword, validatePhone } = require('../services/validateService');
+const { passwordNotInUse, validatePassword, validatePhone } = require('../services/validateService');
 
 const validateUser = async (req, res, next) => {
-    const { email, password, phone } = req.body;
+    const { username, password, phone } = req.body;
+    const userId = req.params.id || null;
     const errors = [];
 
-    const isEmailValid = await validateEmail(email);
-    if (!isEmailValid) {
-        errors.push('Invalid email format');
+    const passwordUseError = await passwordNotInUse(username, password, userId);
+    if (passwordUseError) {
+        errors.push(passwordUseError);
     }
 
     const passwordError = validatePassword(password);

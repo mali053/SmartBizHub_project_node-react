@@ -1,15 +1,33 @@
-const axios = require('axios');
+const UserToDB = require('../models/user')
+const bcrypt = require('bcrypt')
 
-const validateEmail = async (email) => {
-    if (!email) return true;
-    try {
-        const response = await axios.get(`https://emailvalidation.abstractapi.com/v1/?api_key=e93dfe0babd84e35bf33be23e29480c7&email=${email}`);
-        return response.data.is_valid_format.value;
-    } catch (error) {
-        console.error(`Error validating email ${email}:`, error);
-        return false;
+const passwordNotInUse = async (username, password, userId = null) => {
+    console.log("Password");
+
+    if (userId) {
+        const currentUser = await UserToDB.findById(userId);
+        if (currentUser) {
+            const isSamePassword = await bcrypt.compare(password, currentUser.password);
+            if (isSamePassword) {
+                return null;
+            }
+        }
     }
+
+    const existingUsers = await UserToDB.find({ username });
+
+    for (const user of existingUsers) {
+        if (userId && user._id.toString() === userId) {
+            continue;
+        }
+        const isPasswordMatch = await bcrypt.compare(password, user.password);
+        if (isPasswordMatch) {
+            return 'Password already in use';
+        }
+    }
+    return null;
 };
+
 
 const validatePassword = (password) => {
     const minLength = parseInt(process.env.MIN_PASSWORD_LENGTH, 10) || 8;
@@ -44,4 +62,4 @@ const validatePhone = (phone) => {
     return null; // Phone is valid
 };
 
-module.exports = { validateEmail, validatePassword, validatePhone };
+module.exports = { passwordNotInUse, validatePassword, validatePhone };
