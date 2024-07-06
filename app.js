@@ -7,6 +7,8 @@ const connectToDatabase = require('./services/dbService')
 const userRoute = require('./routes/userRoute')
 const {loggedIn} = require('./middleware/authMiddleware')
 const businessRoute = require('./routes/businessRoute');
+const serviceRoute = require('./routes/serviceRoute')
+const meetingRoute = require('./routes/meetingRoute')
 const port = process.env.PORT
 
 const app = express()
@@ -29,6 +31,8 @@ app.use('/user/login', loginLimiter);
 app.use('/user', userRoute)
 app.use(loggedIn)
 app.use('/business', businessRoute)
+app.use('/service', serviceRoute)
+app.use('/meeting', meetingRoute)
 
 app.use((err, req, res, next) => {
   res.status(500).send('יש בעיה בשרת כרגע נסה שוב מאוחר יותר ' + err.message)
